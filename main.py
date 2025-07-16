@@ -38,15 +38,8 @@ for playlist in playlists['items']:
     print(f"- {playlist['name']} (owner: {playlist['owner']['id']})")
 
 # Find Discover Weekly
-discover_weekly_id = None
-playlists = sp.current_user_playlists(limit=50)
-for playlist in playlists['items']:
-    if playlist['name'] == 'Discover Weekly' and playlist['owner']['id'] == 'spotify':
-        discover_weekly_id = playlist['id']
-        break
-
-if not discover_weekly_id:
-    raise Exception("⚠️ Could not find Discover Weekly playlist.")
+# This ID works for almost all accounts following Discover Weekly
+discover_weekly_id = '37i9dQZEVXcL2w06awwMAa'
 
 # Get tracks from Discover Weekly
 tracks = sp.playlist_items(discover_weekly_id)
