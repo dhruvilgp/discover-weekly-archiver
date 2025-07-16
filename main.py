@@ -33,6 +33,7 @@ playlist_name = f"DWA {monday.month}/{monday.day}–{sunday.month}/{sunday.day}"
 
 # Debug: list all available playlists
 print("📋 Listing available playlists:")
+playlists = sp.current_user_playlists(limit=50)
 for playlist in playlists['items']:
     print(f"- {playlist['name']} (owner: {playlist['owner']['id']})")
 
