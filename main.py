@@ -1,31 +1,36 @@
+import os
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import datetime
 
-# Replace with your credentials
-CLIENT_ID = '155270cf325b4caeadc7b9b92b950642'
-CLIENT_SECRET = '9aaf252a696d4e6bb55a1ff5c13ddafd'
-REDIRECT_URI = 'http://127.0.0.1:8888/callback'
+# Get credentials from environment variables (GitHub Secrets)
+CLIENT_ID = os.getenv('SPOTIPY_CLIENT_ID')
+CLIENT_SECRET = os.getenv('SPOTIPY_CLIENT_SECRET')
+REDIRECT_URI = os.getenv('SPOTIPY_REDIRECT_URI')
+REFRESH_TOKEN = os.getenv('SPOTIPY_REFRESH_TOKEN')
 
-# Set up auth
-scope = 'playlist-read-private playlist-modify-private playlist-modify-public'
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
+# Set up auth manually using refresh token
+auth_manager = SpotifyOAuth(
     client_id=CLIENT_ID,
     client_secret=CLIENT_SECRET,
     redirect_uri=REDIRECT_URI,
-    scope=scope
-))
+    scope='playlist-read-private playlist-modify-private playlist-modify-public'
+)
 
-# Get current user's ID
+# Inject refresh token directly
+auth_manager.refresh_access_token(REFRESH_TOKEN)
+sp = spotipy.Spotify(auth_manager=auth_manager)
+
+# Get user ID
 user_id = sp.current_user()['id']
 
-# Step 1: Get current week's Monday and Sunday
+# Get Monday and Sunday of this week
 today = datetime.date.today()
-monday = today - datetime.timedelta(days=today.weekday())         # Monday of current week
-sunday = monday + datetime.timedelta(days=6)                      # Sunday of current week
+monday = today - datetime.timedelta(days=today.weekday())
+sunday = monday + datetime.timedelta(days=6)
 playlist_name = f"DWA {monday.month}/{monday.day}–{sunday.month}/{sunday.day}"
 
-# Step 2: Find Discover Weekly
+# Find Discover Weekly playlist
 discover_weekly_id = None
 results = sp.current_user_playlists(limit=50)
 for playlist in results['items']:
@@ -36,11 +41,11 @@ for playlist in results['items']:
 if not discover_weekly_id:
     raise Exception("⚠️ Could not find Discover Weekly playlist.")
 
-# Step 3: Get tracks from Discover Weekly
+# Get track URIs
 tracks = sp.playlist_items(discover_weekly_id)
 track_uris = [item['track']['uri'] for item in tracks['items'] if item['track']]
 
-# Step 4: Create new weekly playlist
+# Create new dated playlist
 new_playlist = sp.user_playlist_create(
     user=user_id,
     name=playlist_name,
@@ -49,7 +54,7 @@ new_playlist = sp.user_playlist_create(
 )
 new_playlist_id = new_playlist['id']
 
-# Step 5: Add tracks
+# Add tracks
 if track_uris:
     sp.playlist_add_items(new_playlist_id, track_uris)
     print(f"✅ {len(track_uris)} tracks saved to '{playlist_name}'.")
