@@ -31,12 +31,6 @@ monday = today - datetime.timedelta(days=today.weekday())
 sunday = monday + datetime.timedelta(days=6)
 playlist_name = f"DWA {monday.month}/{monday.day}–{sunday.month}/{sunday.day}"
 
-# Debug: list all available playlists
-print("📋 Listing available playlists:")
-playlists = sp.current_user_playlists(limit=50)
-for playlist in playlists['items']:
-    print(f"- {playlist['name']} (owner: {playlist['owner']['id']})")
-
 # Find Discover Weekly
 # This ID works for almost all accounts following Discover Weekly
 discover_weekly_id = '37i9dQZEVXcL2w06awwMAa'
