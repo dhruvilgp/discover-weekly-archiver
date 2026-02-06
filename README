@@ -1,0 +1,82 @@
+# Discover Weekly Archiver
+
+Automatically archive your Spotify Discover Weekly playlist every Monday using GitHub Actions.
+
+## 🎯 Purpose
+
+Spotify's Discover Weekly playlist updates every Monday with fresh recommendations, but the old songs disappear. This tool automatically saves each week's playlist before it's replaced, so you never lose track of great music discoveries.
+
+## ✨ Features
+
+- 🔄 Runs automatically every Monday at 9:00 AM UTC
+- 📅 Creates date-labeled playlists (e.g., "DWA 2/3/26–2/9/26")
+- 🔒 Private playlists by default
+- ⚡ Can be triggered manually via GitHub Actions
+- 🛡️ Prevents duplicate playlists for the same week
+
+## 🚀 Setup Instructions
+
+### 1. Create a Spotify App
+
+1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+2. Log in with your Spotify account
+3. Click **Create an App**
+4. Fill in the app name (e.g., "Discover Weekly Archiver") and description
+5. Accept the terms and click **Create**
+6. Note your **Client ID** and **Client Secret**
+7. Click **Edit Settings**
+8. Add `http://localhost:8888/callback` to **Redirect URIs** and save
+
+### 2. Configure GitHub Secrets
+
+1. Go to your forked repository
+2. Click **Settings** → **Secrets and variables** → **Actions**
+3. Click **New repository secret** and add these four secrets:
+
+| Secret Name | Description |
+|-------------|-------------|
+| `SPOTIPY_CLIENT_ID` | Your Spotify app's Client ID |
+| `SPOTIPY_CLIENT_SECRET` | Your Spotify app's Client Secret |
+| `SPOTIPY_REDIRECT_URI` | `http://localhost:8888/callback` |
+| `SPOTIPY_REFRESH_TOKEN` | Your Spotify refresh token |
+
+### 3. Enable GitHub Actions
+
+1. Go to the **Actions** tab in your repository
+2. Click **"I understand my workflows, go ahead and enable them"**
+3. The workflow will now run automatically every Monday at 9:00 AM UTC
+
+### 4. Test It
+
+1. Go to **Actions** tab
+2. Click **Save Discover Weekly** workflow
+3. Click **Run workflow** → **Run workflow**
+4. Check your Spotify account for the new archived playlist!
+
+## 📋 How It Works
+
+1. **Authentication**: Uses OAuth2 with a refresh token to access your Spotify account
+2. **Find Discover Weekly**: Searches your playlists for "Discover Weekly"
+3. **Create Archive**: Creates a new private playlist with the current week's date range
+4. **Copy Tracks**: Adds all tracks from Discover Weekly to the new playlist
+5. **Prevent Duplicates**: Checks if a playlist for the current week already exists
+
+## 🛠️ Technologies Used
+
+- **Python 3.11** - Main programming language
+- **Spotipy** - Spotify Web API wrapper
+- **GitHub Actions** - Automated scheduling and execution
+- **OAuth2** - Secure authentication
+
+## 🎵 Example Output
+
+When the script runs successfully, it creates playlists like:
+- `DWA 2/3/26–2/9/26` (February 3-9, 2026)
+- `DWA 2/10/26–2/16/26` (February 10-16, 2026)
+- `DWA 12/30/26–1/5/27` (December 30, 2026 - January 5, 2027)
+
+Each playlist contains all 30 songs from that week's Discover Weekly.
+
+## 📝 License
+
+This project is open source and available under the MIT License.
