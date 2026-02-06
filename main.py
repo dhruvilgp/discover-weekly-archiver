@@ -44,7 +44,7 @@ def main():
     today = datetime.date.today()
     monday = today - datetime.timedelta(days=today.weekday())
     sunday = monday + datetime.timedelta(days=6)
-    playlist_name = f"DWA {monday.month}/{monday.day}–{sunday.month}/{sunday.day}"
+    playlist_name = f"DWA {monday.month}/{monday.day}/{str(monday.year)[-2:]}–{sunday.month}/{sunday.day}/{str(sunday.year)[-2:]}"
 
     print(f"📅 Creating playlist: {playlist_name}")
 
