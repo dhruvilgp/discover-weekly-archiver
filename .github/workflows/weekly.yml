@@ -2,29 +2,47 @@ name: Save Discover Weekly
 
 on:
   schedule:
-    - cron: '0 9 * * 1'  # Runs every Monday at 09:00 UTC
-  workflow_dispatch:     # Allows manual triggering from GitHub
+    # Runs every Monday at 09:00 UTC (adjust to your timezone preference)
+    - cron: '0 9 * * 1'
+  
+  # Allows manual triggering from GitHub Actions tab
+  workflow_dispatch:
 
 jobs:
-  run-script:
+  archive-playlist:
     runs-on: ubuntu-latest
-
+    
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Run script
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      
+      - name: 🎵 Archive Discover Weekly
         run: python main.py
         env:
           SPOTIPY_CLIENT_ID: ${{ secrets.SPOTIPY_CLIENT_ID }}
           SPOTIPY_CLIENT_SECRET: ${{ secrets.SPOTIPY_CLIENT_SECRET }}
           SPOTIPY_REDIRECT_URI: ${{ secrets.SPOTIPY_REDIRECT_URI }}
           SPOTIPY_REFRESH_TOKEN: ${{ secrets.SPOTIPY_REFRESH_TOKEN }}
+      
+      - name: ✅ Report Success
+        if: success()
+        run: |
+          echo "✅ Successfully archived Discover Weekly playlist!"
+          echo "Check your Spotify account for the new playlist."
+      
+      - name: ❌ Report Failure
+        if: failure()
+        run: |
+          echo "❌ Failed to archive Discover Weekly playlist."
+          echo "Check the logs above for error details."
